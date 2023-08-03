@@ -20,9 +20,9 @@
     plControlsEnabled.set(false)
   })
 
-  $: if($plControlsEnabled) {
-    console.log($plControlsEnabled);
-}
+  // $: if($plControlsEnabled) {
+  //   console.log($plControlsEnabled);
+  // }
 </script>
 
 <div class="canvas-wrapper">

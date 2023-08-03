@@ -1,10 +1,14 @@
 import { perlin3D } from '@leodeslf/perlin-noise';
 
 export function getDisplacement(x: number, y: number, z: number): number {
-    
+    x += performance.timing.navigationStart;
     x = x/100;
     y = y/100;
     z = z/100;
+
+    // x = x/100;
+    // y = y/100;
+    // z = z/100;
 
     let max = 10;
     let min = -2;
@@ -30,6 +34,7 @@ export function getDisplacement(x: number, y: number, z: number): number {
     if (n > max) max = n;
     if (n < min) min = n;
 
-    return 1 + (0.02*n);
+    // return 1+(0.05*n);
+    return 1;
 
 }

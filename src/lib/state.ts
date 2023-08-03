@@ -3,6 +3,9 @@ import { writable } from 'svelte/store';
 export const fpControlsEnabled = writable(false);
 export const plControlsEnabled = writable(false);
 
+export const tilesGeom = writable();
+export const chunkIndex = writable(1);
+
 // function createChunkCache() {
 // 	const { subscribe, set, update } = writable({});
 

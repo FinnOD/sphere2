@@ -22,6 +22,7 @@
     "@threlte/extras": "next",
     "@threlte/rapier": "next",
     "@threlte/theatre": "next",
+    "@timohausmann/quadtree-ts": "^2.0.0-beta.1",
     "@types/three": "^0.152.1",
     "@typescript-eslint/eslint-plugin": "^5.45.0",
     "@typescript-eslint/parser": "^5.45.0",
