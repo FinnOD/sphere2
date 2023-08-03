@@ -1,11 +1,8 @@
 <script lang="ts">
 	import { T, useThrelte, useFrame } from '@threlte/core';
-	import { ContactShadows, Float, Grid, OrbitControls } from '@threlte/extras';
 	import World from './World.svelte';
-	import { plControlsEnabled } from '$lib/state';
 	import { useKeyboardControls } from 'svelte-kbc';
 	const { renderer, camera } = useThrelte();
-	import PointerLockControls from '$lib/extras/PointerLockControlsOld.svelte';
 	import { Fog, Mesh, Vector3 } from 'three';
 	import { tweened } from 'svelte/motion';
 	import { cubicInOut } from 'svelte/easing';
@@ -48,7 +45,6 @@
 <World playerPosition={cameraPos} />
 
 <Player
-    bind:playerMesh
     bind:position={cameraPos}
     speed={1000}
   />
