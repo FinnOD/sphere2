@@ -8,7 +8,7 @@
 	import { AutoColliders, Collider } from '@threlte/rapier';
 
 	// Good to 10 million triangles and <2000 calls I think
-	export let playerPosition = new Vector3(0, 1, 0);
+	export let playerPosition: Vector3;
 	// export let chunkIndex: number;
     
 
@@ -74,6 +74,11 @@
         </T.Mesh>
     {/if}
 {/each}
+
+
+<T.Mesh geometry={ssss} position={[0,0,0]} scale={20}>
+    <T.MeshPhongMaterial color="pink" wireframe={false} />
+</T.Mesh>
 
 {#each midPoints as mp}
     <T.Mesh geometry={ssss} position={[mp.x, mp.y, mp.z]}>

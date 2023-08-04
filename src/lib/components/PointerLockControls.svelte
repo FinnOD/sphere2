@@ -51,14 +51,20 @@
 
 		const { movementX, movementY } = event;
 
-		_euler.setFromQuaternion($camera.quaternion);
+		
+		if ($camera.localRot)
+			_euler.setFromQuaternion($camera.localRot);
+		else
+			_euler.set(0,0,0);
+		// let _euler = new Euler(0, 0, 0, 'YXZ');
 
 		_euler.y -= movementX * 0.002 * pointerSpeed;
 		_euler.x -= movementY * 0.002 * pointerSpeed;
 
 		_euler.x = Math.max(_PI_2 - maxPolarAngle, Math.min(_PI_2 - minPolarAngle, _euler.x));
+		$camera.localRot = new Quaternion().setFromEuler(_euler)
 
-		$camera.quaternion.setFromEuler(_euler);
+		// $camera.quaternion.multiply();
 
 		onChange();
 	}
