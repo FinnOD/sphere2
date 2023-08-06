@@ -46,13 +46,13 @@
     position: fixed;
     width: 100%;
     height: 100%;
-    background: #161616;
+    background: #ddd;
   }
   .focus-box {
     position: absolute;
     top: 0;
     left: 0;
-    background: #16161688;
+    /* background: #16161688; */
     width: 100%;
     height: 100%;
     display: flex;

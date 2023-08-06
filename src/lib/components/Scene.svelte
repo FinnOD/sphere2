@@ -23,30 +23,19 @@
 	useFrame(() => {
 		// console.log('hs')
 		let stats = renderer?.info.render;
-		if (stats.frame % 30 == 0) {
-			// console.log(stats);
+		if (stats.frame % 120 == 0) {
+			console.log(stats);
 			// console.log(cameraPos, cameraDirection);
 			// console.log(space);
 		}
 	});
 
-	const progress = tweened(1, {
-		duration: 400,
-		easing: cubicInOut
-	});
-
-	$: if ($run) {
-		progress.set(2);
-	} else {
-		progress.set(1);
-	}
 </script>
 
 <World playerPosition={cameraPos} />
 
 <Player
     bind:position={cameraPos}
-    speed={1000}
   />
 
 <!-- <T.PerspectiveCamera makeDefault position.y={-2980} fov={(1+($progress-1)*0.4) *55} far={10*3000} near={1}>
@@ -68,9 +57,7 @@
 <!-- <T.Fog
     bind:ref={fog}
     color={'#ddd'}
-    near={2000}
-    far={4000}
-    density={0.1}
+    
     on:create={({ ref }) => {
         scene.fog = ref;
     }}

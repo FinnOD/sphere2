@@ -43,7 +43,7 @@ export function generateWorldGeometry(hexasphere: Hexasphere, nSubdivide: number
 
         let vertices = [];
         let indices = [];
-        vec.set(parseFloat(t.centerPoint.x), parseFloat(t.centerPoint.y), parseFloat(t.centerPoint.z)).normalize().multiplyScalar(3000);
+        vec.set(parseFloat(t.centerPoint.x), parseFloat(t.centerPoint.y), parseFloat(t.centerPoint.z));//.normalize().multiplyScalar(3000);
         vertices.push(vec.x, vec.y, vec.z);
         midPoints.push(vec.clone());
         for (let j = 0; j < t.boundary.length; j++) {

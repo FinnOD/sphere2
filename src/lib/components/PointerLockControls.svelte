@@ -18,6 +18,7 @@
 	const dispatch = createEventDispatcher();
 
 	const _euler = new Euler(0, 0, 0, 'YXZ');
+	$camera.localRot = new Quaternion().setFromEuler(_euler);
 	const _PI_2 = Math.PI / 2;
 
 	if (!renderer) {
@@ -52,17 +53,15 @@
 		const { movementX, movementY } = event;
 
 		
-		if ($camera.localRot)
-			_euler.setFromQuaternion($camera.localRot);
-		else
-			_euler.set(0,0,0);
+
+		_euler.setFromQuaternion($camera.localRot);
 		// let _euler = new Euler(0, 0, 0, 'YXZ');
 
 		_euler.y -= movementX * 0.002 * pointerSpeed;
 		_euler.x -= movementY * 0.002 * pointerSpeed;
 
 		_euler.x = Math.max(_PI_2 - maxPolarAngle, Math.min(_PI_2 - minPolarAngle, _euler.x));
-		$camera.localRot = new Quaternion().setFromEuler(_euler)
+		$camera.localRot.setFromEuler(_euler)
 
 		// $camera.quaternion.multiply();
 
