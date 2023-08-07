@@ -1,38 +1,30 @@
-# create-svelte
 
-Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/master/packages/create-svelte).
+# Sphere2
 
-## Creating a project
+I came up with this when I was maybe 17 on a family trip. One night I was having trouble sleeping and I had a lot of ideas to do with twilight and purpose. I have forgotten almost all of that, so I would like to use this idea that has been kicking around for far too long as a demo for some rendering techniques I find interesting. 
 
-If you're seeing this, you've probably already done this step. Congrats!
+# Features To Do
+## Technical
+### World Generation
+- [x] Hextile chunking
+- [x] Defer chunking to worker thread
+- [ ] Spread out chunk loading over frames
+- [ ] Cache chunk data for later use
+- [ ] Preempt which chunks will be needed before they're loaded and put in cache. (Compute slowly)
+- [ ] Stitch the holes between chunks like this: https://www.youtube.com/watch?v=sXFxfqGPR-c
 
-```bash
-# create a new project in the current directory
-npm create svelte@latest
+### Control
+- [ ] Fix the camera rotation issue that happens at one side of the sphere. Apparently hairy ball theorem.
+https://gamedev.stackexchange.com/questions/73588/how-do-i-fix-my-planet-facing-camera
+- [ ] Camera-player physics interacting with surface and walking properly
 
-# create a new project in my-app
-npm create svelte@latest my-app
-```
 
-## Developing
+### Style
+- [ ] Fog shader. This looks nice: https://www.youtube.com/watch?v=k1zGz55EqfU Would be good to have the fog not rise into the sphere to high, so that you can see across the sphere. Reminds me of looking into the sheet of fog over hobart
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
-```bash
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
-
-## Building
-
-To create a production version of your app:
-
-```bash
-npm run build
-```
-
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
+![fog over hobart](static/reference/hobfog.jpeg)
+![fog from princess mononoke](static/reference/mononokefog.jpeg)
+- [ ] Instanced grass blades with wind.  https://www.youtube.com/watch?v=Y0Ko0kvwfgA
+    - Could default to rendering just speculars and shadows at a distance, taking the same input wind etc but rendering onto reduced or flat geometry.
+- [ ] Perhaps ghibli painted style, especially for natural lumpy objects like trees and clouds. Interesting trick with taking the normals from a smooth underlying surface https://github.com/craftzdog/ghibli-style-shader/tree/main
+https://www.youtube.com/watch?v=DEgzuMmJtu8
