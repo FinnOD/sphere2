@@ -14,7 +14,7 @@
 	import Chunk from './Chunk.svelte';
 	import Hexasphere from '$lib/extras/Hexasphere.js';
 	import { generateWorldGeometry } from '$lib/extras/GenerateWorldGeometry';
-	import { tilesGeom, chunkIndex } from '$lib/state';
+	import { tilesGeom, chunkIndex, settings } from '$lib/state';
 	import { AutoColliders, Collider } from '@threlte/rapier';
 
 	// Good to 10 million triangles and <2000 calls I think
@@ -100,10 +100,10 @@
 	$: chunkAndNeighbours = [$chunkIndex, ...neighboursByIndex[$chunkIndex]];
 
     let distanceToDetail = {
-        0: 7,
-        1: 7,
-        2: 6,
-        3: 6,
+        0: 5,//7,
+        1: 4,//7,
+        2: 3,//6,
+        3: 2,//6,
         4: 5,
         5: 1,
     }
@@ -125,7 +125,7 @@
     {:else}
 
     <!-- <Chunk tile={pureTiles[i]} color={new Color().setHSL((0.5*distanceMatrix[$chunkIndex][i])/6, 0.9, 0.7)} chunkIndex={i} detail={2} /> -->
-    <Chunk tile={pureTiles[i]} color={new Color().setHSL((distanceToDetail[distanceMatrix[$chunkIndex][i]])/4, 0.9, 0.7)} chunkIndex={i} detail={distanceToDetail[distanceMatrix[$chunkIndex][i]]} />
+    <Chunk tile={pureTiles[i]} color={new Color().setHSL((distanceToDetail[distanceMatrix[$chunkIndex][i]])/5, 0.9, 0.7)} chunkIndex={i} detail={distanceToDetail[distanceMatrix[$chunkIndex][i]]} />
     <!-- <Chunk tile={pureTiles[i]} color={new Color(0x66aa44)} chunkIndex={i} detail={7} /> -->
     <!-- detail 9 seems good -->
     <!-- color={i == 0 ? new Color(0xffaa44) : undefined} -->

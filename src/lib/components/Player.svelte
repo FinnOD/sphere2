@@ -7,6 +7,7 @@
 	import { getDisplacement } from '$lib/extras/SphereNoise';
 	import { tweened } from 'svelte/motion';
 	import { cubicInOut, quadInOut } from 'svelte/easing';
+	import { settings } from '$lib/state';
 
 	export let position: Vector3;
 	export let speed = 5;
@@ -14,7 +15,15 @@
 	let lock: () => void;
 	let cam: PerspectiveCamera;
 
-	const { space, forward, backward, right, left, run } = useKeyboardControls();
+	const { space, forward, backward, right, left, run, debug} = useKeyboardControls();
+	let lastTime = Date.now()
+    $: if($debug){
+		if(Date.now() - lastTime > 100){
+			lastTime = Date.now();
+			$settings['debug']['enabled'] = !$settings['debug']['enabled'];
+			console.log('debug is: ', $settings['debug']['enabled']);
+		}
+	}
 
 	const progress = tweened(1, {
 		duration: 400,

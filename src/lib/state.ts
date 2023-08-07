@@ -1,10 +1,24 @@
-import { writable } from 'svelte/store';
+import { writable, type Writable } from 'svelte/store';
+import { useKeyboardControls } from "svelte-kbc";
 
 export const fpControlsEnabled = writable(false);
 export const plControlsEnabled = writable(false);
 
 export const tilesGeom = writable();
 export const chunkIndex = writable(1);
+
+export type Settings = {
+    debug: {
+        enabled: boolean;
+        fog: boolean;
+        sphereDetail: number;
+    };
+};
+export const settings: Writable<Settings | undefined> = writable(undefined);
+export function processHash() {
+    const hash = decodeURIComponent(location.hash.substring(1));
+    return JSON.parse(hash);
+}
 
 // function createChunkCache() {
 // 	const { subscribe, set, update } = writable({});

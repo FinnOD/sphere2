@@ -7,15 +7,19 @@
 	import { tweened } from 'svelte/motion';
 	import { cubicInOut } from 'svelte/easing';
     import Player from './Player.svelte';
+	import { settings } from '$lib/state';
 
 	// interactivity();
 	const { scene } = useThrelte();
 	const { space, forward, backward, right, left, run } = useKeyboardControls();
-	let fog;
+
 	let cameraPos: Vector3 = new Vector3(0, -2990, 0)
    
 	let cameraDirection: Vector3;
 
+	$: if(!$settings['debug']['fog']){
+		delete scene.fog;
+	}
     
     let playerMesh: Mesh;
     let positionHasBeenSet = false
@@ -24,7 +28,7 @@
 		// console.log('hs')
 		let stats = renderer?.info.render;
 		if (stats.frame % 120 == 0) {
-			console.log(stats);
+			// console.log(stats);
 			// console.log(cameraPos, cameraDirection);
 			// console.log(space);
 		}
@@ -54,11 +58,12 @@
 
 <T.DirectionalLight intensity={0.7} position={[0, 40, 90]} />
 <T.AmbientLight intensity={0.1} />
-<!-- <T.Fog
-    bind:ref={fog}
-    color={'#ddd'}
-    
-    on:create={({ ref }) => {
-        scene.fog = ref;
-    }}
-/> -->
+
+{#if $settings.debug.fog}
+	<T.Fog
+		color={$settings['debug']['fog'] ? '#faa': '#ddd'}
+		on:create={({ ref }) => {
+			scene.fog = ref;
+		}}
+	/>
+{/if}
