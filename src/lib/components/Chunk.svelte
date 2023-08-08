@@ -7,6 +7,7 @@
 	import { scale } from 'svelte/transition';
 	import { deserializeBufferGeometry, serializeBufferGeometry } from '$lib/extras/SerializeBufferGeometry';
 	import { onDestroy, onMount } from 'svelte';
+	import GroundMaterial from './GroundMaterial.svelte';
 
 	export let tile: BufferGeometry;
 	export let chunkIndex: number;
@@ -73,10 +74,10 @@
 
 {#await subdividedGeomPromise}
 	<T.Mesh geometry={subdividedGeomLow}>
-		<T.MeshPhongMaterial {color} wireframe={false} side={BackSide} />
+		<GroundMaterial />
 	</T.Mesh>
 {:then finalGeom}
 	<T.Mesh geometry={finalGeom}>
-		<T.MeshPhongMaterial {color} wireframe={false} side={BackSide} />
+		<GroundMaterial />
 	</T.Mesh>
 {/await}

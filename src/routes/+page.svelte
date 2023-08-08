@@ -27,8 +27,7 @@
 				value = { //default values
 					debug: {
 						enabled: false,
-						fog: true,
-						sphereDetail: 2
+						fog: false,
 					}
 				};
 			}

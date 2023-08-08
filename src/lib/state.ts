@@ -11,7 +11,6 @@ export type Settings = {
     debug: {
         enabled: boolean;
         fog: boolean;
-        sphereDetail: number;
     };
 };
 export const settings: Writable<Settings | undefined> = writable(undefined);

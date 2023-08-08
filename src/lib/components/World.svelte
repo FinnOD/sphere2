@@ -16,13 +16,15 @@
 	import { generateWorldGeometry } from '$lib/extras/GenerateWorldGeometry';
 	import { tilesGeom, chunkIndex, settings } from '$lib/state';
 	import { AutoColliders, Collider } from '@threlte/rapier';
+	import GroundMaterial from './GroundMaterial.svelte';
 
 	// Good to 10 million triangles and <2000 calls I think
 	export let playerPosition: Vector3;
+	export let defaultDetail: number = 3;
 	// export let chunkIndex: number;
 
 	let hexasphere = new Hexasphere(3000, 10, 1.0);
-	let [pureTiles, triGeoms, midPoints] = generateWorldGeometry(hexasphere, 3);
+	let [pureTiles, triGeoms, midPoints] = generateWorldGeometry(hexasphere, defaultDetail);
 	$: tilesGeom.set(pureTiles);
 
 	function getNeighboursByIndex(hex: Hexasphere): number[][] {
@@ -99,37 +101,32 @@
 	$: chunkIndex.set(closestChunk(playerPosition));
 	$: chunkAndNeighbours = [$chunkIndex, ...neighboursByIndex[$chunkIndex]];
 
+	// detail 9 seems good
     let distanceToDetail = {
-        0: 5,//7,
-        1: 4,//7,
-        2: 3,//6,
-        3: 2,//6,
+        0: 8,
+        1: 8,
+        2: 7,
+        3: 6,
         4: 5,
-        5: 1,
+        5: defaultDetail,
     }
+
+	const chunkRenderDist = 2;
+	$: nearbyIndices = distanceMatrix[$chunkIndex].map((d, i) => d <= chunkRenderDist ? i : -1).filter((v) => v >= 0);
+	$: farawayIndices = distanceMatrix[$chunkIndex].map((d, i) => d > chunkRenderDist ? i : -1).filter((v) => v >= 0);
 
 	let ssss = new SphereGeometry(3, 20, 20);
 	let referenceGeom = new SphereGeometry(3175, 20, 20);
 </script>
+    
+{#each farawayIndices as i (i)}
+	<T.Mesh geometry={triGeoms[i]} >
+		<GroundMaterial />
+	</T.Mesh>
+{/each}
 
-{#each triGeoms as tri, i ([$chunkIndex, i])}
-	{#if distanceMatrix[$chunkIndex][i] >= 3}
-		<T.Mesh geometry={tri}>
-            <!-- maxDistance -->
-            <!-- <T.MeshPhongMaterial color={new Color().setHSL((i % 70)/70, 0.9, 0.7)} wireframe={false} side={BackSide} /> -->
-            <T.MeshPhongMaterial color={new Color().setHSL(distanceMatrix[$chunkIndex][i]/maxDistance, 0.9, 0.7)} wireframe={false} side={BackSide} />
-			<!-- <T.MeshPhongMaterial color={new Color(0x66aa44)} wireframe={false} side={BackSide} /> -->
-			<!-- <T.MeshPhongMaterial color={"pink"} wireframe={true} side={DoubleSide} /> -->
-			<!-- color={new Color().setHSL((20 * i) / triGeoms.length, 0.5, 0.5)} -->
-		</T.Mesh>
-    {:else}
-
-    <!-- <Chunk tile={pureTiles[i]} color={new Color().setHSL((0.5*distanceMatrix[$chunkIndex][i])/6, 0.9, 0.7)} chunkIndex={i} detail={2} /> -->
-    <Chunk tile={pureTiles[i]} color={new Color().setHSL((distanceToDetail[distanceMatrix[$chunkIndex][i]])/5, 0.9, 0.7)} chunkIndex={i} detail={distanceToDetail[distanceMatrix[$chunkIndex][i]]} />
-    <!-- <Chunk tile={pureTiles[i]} color={new Color(0x66aa44)} chunkIndex={i} detail={7} /> -->
-    <!-- detail 9 seems good -->
-    <!-- color={i == 0 ? new Color(0xffaa44) : undefined} -->
-	{/if}
+{#each nearbyIndices as i ([$chunkIndex, i])}
+	<Chunk tile={pureTiles[i]} color={new Color().setHSL((2*distanceMatrix[$chunkIndex][i])/maxDistance, 0.9, 0.7)} chunkIndex={i} detail={distanceToDetail[distanceMatrix[$chunkIndex][i]]} />
 {/each}
 
 <T.Mesh geometry={ssss} position={[0, 0, 0]} scale={20}>
