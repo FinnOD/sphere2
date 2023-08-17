@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { T, useFrame, useThrelte } from '@threlte/core';
 	import { onDestroy } from 'svelte';
-	import { Camera, PerspectiveCamera, Quaternion, Spherical, Vector3 } from 'three';
+	import { Camera, Mesh, MeshNormalMaterial, PerspectiveCamera, Quaternion, SphereGeometry, Spherical, Vector3 } from 'three';
 	import PointerLockControls from './PointerLockControls.svelte';
 	import { useKeyboardControls } from 'svelte-kbc';
 	import { getDisplacement } from '$lib/extras/SphereNoise';
 	import { tweened } from 'svelte/motion';
 	import { cubicInOut, quadInOut } from 'svelte/easing';
-	import { settings } from '$lib/state';
+	import { settings, playerPosition } from '$lib/state';
 
 	export let position: Vector3;
 	export let speed = 5;
@@ -51,6 +51,8 @@
 	const downVector = new Vector3(0, -1, 0);
 	const globalAngle = new Quaternion();
 
+	let surrogatePos = position.clone();
+
 	useFrame((_, delta) => {
 		// Construct velocity vector
 		const d = speed * ($progress * 10 + 1) * delta; // or ~0.01, delta is a not deterministic so hard to test
@@ -64,16 +66,30 @@
 		// Update position vector
 		position = position.add(tangentVelocity);
 		let normal = position.normalize().clone();
-		let offset = normal.clone().multiplyScalar(-4);
-		position = normal.multiplyScalar(3000);
-		position.multiplyScalar(getDisplacement(position.x, position.y, position.z));
-		position.clampLength(-Infinity, 3179 );
-		position.add(offset);
+		let onSphere = normal.clone().multiplyScalar(3000);
+		
+		let displacement = getDisplacement(onSphere.x, onSphere.y, onSphere.z);
+		let displacementVec = normal.clone().multiplyScalar(-displacement);
+		let cameraHeightOffset = normal.clone().multiplyScalar(-2);
+		
+
+		let tentativePos = onSphere.add(displacementVec);
+		// if (tentativePos.length() < 3000){
+			position = tentativePos;
+			playerPosition.set(position.clone());
+			surrogatePos = position.clone();
+			position.add(cameraHeightOffset);
+		// }
+		//For cam
+		
+
+		
+		
 
 		// This is the rotation magic and doesnt work 100% due to the hairy ball theorem
 		// The fix is here but i dont know how to do it.
 		// https://gamedev.stackexchange.com/questions/73588/how-do-i-fix-my-planet-facing-camera
-		// First adjust to global angle
+		// First adjust to global angles
 		const norm = cam.position.clone().normalize();
 		globalAngle.setFromUnitVectors(downVector, norm);
 		cam.quaternion.copy(globalAngle);
@@ -88,8 +104,8 @@
 	<T.PerspectiveCamera
 		makeDefault
 		fov={65 + (10 * $progress) / 5}
-		far={1.1 * 2 * 3000}
-		near={0.1}
+		far={10 * 3000}
+		near={1}
 		bind:ref={cam}
 		position.x={position.x}
 		position.y={position.y}
@@ -104,3 +120,8 @@
      maxPolarAngle={maxAngle} -->
 	</T.PerspectiveCamera>
 </T.Group>
+
+<T.Mesh position={[surrogatePos.x, surrogatePos.y, surrogatePos.z]}>
+	<T.SphereGeometry radius={1}></T.SphereGeometry>
+	<T.MeshNormalMaterial></T.MeshNormalMaterial>
+</T.Mesh>

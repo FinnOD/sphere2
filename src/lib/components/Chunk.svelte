@@ -73,11 +73,11 @@
 </script>
 
 {#await subdividedGeomPromise}
-	<T.Mesh geometry={subdividedGeomLow}>
+	<T.Mesh geometry={subdividedGeomLow} >
 		<GroundMaterial />
 	</T.Mesh>
 {:then finalGeom}
-	<T.Mesh geometry={finalGeom}>
+	<T.Mesh geometry={finalGeom} >
 		<GroundMaterial />
 	</T.Mesh>
 {/await}

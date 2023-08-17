@@ -11,7 +11,10 @@ I came up with this when I was maybe 17 on a family trip. One night I was having
 - [ ] Spread out chunk loading over frames
 - [ ] Cache chunk data for later use
 - [ ] Preempt which chunks will be needed before they're loaded and put in cache. (Compute slowly)
+- [ ] Block far away chunks into 'megachunks' that can be rendered as a single mesh. (To reduce draw calls)
 - [ ] Stitch the holes between chunks like this: https://www.youtube.com/watch?v=sXFxfqGPR-c
+- [ ] Define biomes and terrain type attributes from noise CPU side. 
+    - Geography (height / temperature, soil quality, lakeness) ->  (wind, humidity, greenness, wetness) -> 
 
 ### Control
 - [ ] Fix the camera rotation issue that happens at one side of the sphere. Apparently hairy ball theorem.

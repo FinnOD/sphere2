@@ -70,7 +70,7 @@
 		position: fixed;
 		width: 100%;
 		height: 100%;
-		background: #ddd;
+		background: #7f99b2;
 	}
 	.focus-box {
 		position: absolute;

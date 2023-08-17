@@ -9,21 +9,29 @@
 		SphereGeometry,
 		Spherical,
 		BoxGeometry,
-		MeshStandardMaterial
+		MeshStandardMaterial,
+
+		IcosahedronGeometry,
+
+		Group
+
+
 	} from 'three';
 	import Chunk from './Chunk.svelte';
 	import Hexasphere from '$lib/extras/Hexasphere.js';
+	import { Instance, InstancedMesh } from '@threlte/extras';
 	import { generateWorldGeometry } from '$lib/extras/GenerateWorldGeometry';
 	import { tilesGeom, chunkIndex, settings } from '$lib/state';
 	import { AutoColliders, Collider } from '@threlte/rapier';
 	import GroundMaterial from './GroundMaterial.svelte';
+	import { getDisplacement } from '$lib/extras/SphereNoise';
 
 	// Good to 10 million triangles and <2000 calls I think
 	export let playerPosition: Vector3;
-	export let defaultDetail: number = 3;
+	export let defaultDetail: number = 5;
 	// export let chunkIndex: number;
 
-	let hexasphere = new Hexasphere(3000, 10, 1.0);
+	let hexasphere = new Hexasphere(3000, 4, 1.0);
 	let [pureTiles, triGeoms, midPoints] = generateWorldGeometry(hexasphere, defaultDetail);
 	$: tilesGeom.set(pureTiles);
 
@@ -103,24 +111,33 @@
 
 	// detail 9 seems good
     let distanceToDetail = {
-        0: 8,
-        1: 8,
-        2: 7,
-        3: 6,
-        4: 5,
-        5: defaultDetail,
+        0: 7,
+        1: 7,
     }
 
-	const chunkRenderDist = 2;
+	const chunkRenderDist = 1;
 	$: nearbyIndices = distanceMatrix[$chunkIndex].map((d, i) => d <= chunkRenderDist ? i : -1).filter((v) => v >= 0);
 	$: farawayIndices = distanceMatrix[$chunkIndex].map((d, i) => d > chunkRenderDist ? i : -1).filter((v) => v >= 0);
 
 	let ssss = new SphereGeometry(3, 20, 20);
-	let referenceGeom = new SphereGeometry(3175, 20, 20);
+	let referenceGeom = new IcosahedronGeometry(3000, 45);
+
+	function mpDisp(mp: Vector3): number[]{
+
+		let normal = mp.clone().normalize()
+		let onSphere = normal.clone().multiplyScalar(3000);
+		
+		let noise = getDisplacement(onSphere.x, onSphere.y, onSphere.z);
+		let ballOffset = normal.clone().multiplyScalar(-3);
+
+		onSphere.add(normal.multiplyScalar(-noise)).add(ballOffset);
+
+		return [onSphere.x, onSphere.y, onSphere.z]
+	}
 </script>
     
 {#each farawayIndices as i (i)}
-	<T.Mesh geometry={triGeoms[i]} >
+	<T.Mesh geometry={triGeoms[i]}>
 		<GroundMaterial />
 	</T.Mesh>
 {/each}
@@ -134,11 +151,12 @@
 </T.Mesh>
 
 {#each midPoints as mp}
-	<T.Mesh geometry={ssss} position={[mp.x, mp.y, mp.z]}>
-		<T.MeshPhongMaterial color="green" wireframe={false} />
+	<T.Mesh geometry={ssss} position={mpDisp(mp)}>
+		<T.MeshPhongMaterial color="white" wireframe={false} />
+		<!-- <Instance /> -->
 	</T.Mesh>
 {/each}
 
 <!-- <T.Mesh geometry={referenceGeom}>
-	<T.MeshPhongMaterial color="blue" wireframe={false} side={BackSide} />
+	<T.MeshPhongMaterial color="#2B65EC" wireframe={false} side={DoubleSide} />
 </T.Mesh> -->

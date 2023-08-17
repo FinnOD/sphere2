@@ -2,6 +2,7 @@ import { BufferGeometry, Float32BufferAttribute, Vector3 } from "three";
 import type Hexasphere from "./Hexasphere";
 import { LoopSubdivision } from "three-subdivide";
 import { getDisplacement } from "./SphereNoise";
+import * as BufferGeometryUtils from 'three/addons/utils/BufferGeometryUtils';
 
 const subDivideParams = {
     split: false,         // optional, default: true
@@ -14,20 +15,28 @@ const subDivideParams = {
 export function noisifyBuffer(geometry: BufferGeometry): BufferGeometry{
 
     const positionAttribute = geometry.getAttribute( 'position' );
+    const position = new Vector3();
+    let noise;
     
     for (let i = 0; i < positionAttribute.array.length; i += 3) {
         
-        let noise = getDisplacement(
+        position.set(
             positionAttribute.array[i],
             positionAttribute.array[i + 1],
             positionAttribute.array[i + 2],
-        )
-        positionAttribute.array[i] *= noise;
-        positionAttribute.array[i + 1] *= noise;
-        positionAttribute.array[i + 2] *= noise;
+        );
+        position.setLength(3000);
+        noise = getDisplacement(position.x, position.y, position.z);
+        let normal = position.clone().normalize().multiplyScalar(-noise)
+        position.add(normal);
+
+        positionAttribute.array[i] = position.x;
+        positionAttribute.array[i + 1] = position.y;
+        positionAttribute.array[i + 2] = position.z;
     }
 
     positionAttribute.needsUpdate = true;
+    geometry = BufferGeometryUtils.mergeVertices(geometry,);
     return geometry;
 }
 
@@ -43,7 +52,7 @@ export function generateWorldGeometry(hexasphere: Hexasphere, nSubdivide: number
 
         let vertices = [];
         let indices = [];
-        vec.set(parseFloat(t.centerPoint.x), parseFloat(t.centerPoint.y), parseFloat(t.centerPoint.z));//.normalize().multiplyScalar(3000);
+        vec.set(parseFloat(t.centerPoint.x), parseFloat(t.centerPoint.y), parseFloat(t.centerPoint.z)).normalize().multiplyScalar(3000);
         vertices.push(vec.x, vec.y, vec.z);
         midPoints.push(vec.clone());
         for (let j = 0; j < t.boundary.length; j++) {

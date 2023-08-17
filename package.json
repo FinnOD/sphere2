@@ -41,6 +41,8 @@
   "type": "module",
   "dependencies": {
     "@leodeslf/perlin-noise": "^1.1.2",
+    "alea": "^1.0.1",
+    "simplex-noise": "^4.0.1",
     "svelte-kbc": "^0.1.1",
     "three-subdivide": "^1.1.3"
   }
