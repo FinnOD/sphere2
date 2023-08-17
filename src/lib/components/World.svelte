@@ -23,7 +23,7 @@
 	import { generateWorldGeometry } from '$lib/extras/GenerateWorldGeometry';
 	import { tilesGeom, chunkIndex, settings } from '$lib/state';
 	import { AutoColliders, Collider } from '@threlte/rapier';
-	import GroundMaterial from './GroundMaterial.svelte';
+	import GroundMaterial from '$lib/components/materials/GroundMaterial/GroundMaterial.svelte';
 	import { getDisplacement } from '$lib/extras/SphereNoise';
 
 	// Good to 10 million triangles and <2000 calls I think

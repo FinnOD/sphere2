@@ -7,7 +7,7 @@
 	import { scale } from 'svelte/transition';
 	import { deserializeBufferGeometry, serializeBufferGeometry } from '$lib/extras/SerializeBufferGeometry';
 	import { onDestroy, onMount } from 'svelte';
-	import GroundMaterial from './GroundMaterial.svelte';
+	import GroundMaterial from '$lib/components/materials/GroundMaterial/GroundMaterial.svelte';
 
 	export let tile: BufferGeometry;
 	export let chunkIndex: number;
