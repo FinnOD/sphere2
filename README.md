@@ -9,7 +9,9 @@ I came up with this when I was maybe 17 on a family trip. One night I was having
 - [x] Hextile chunking
 - [x] Defer chunking to worker thread
 - [ ] Spread out chunk loading over frames
-- [ ] Cache chunk data for later use
+- [x] Cache chunk data for later use
+    - [ ] Make the cache prioritised and remove chunks from queue to make reprioritise movement.
+    - [ ] Remove far away chunks from cache to keep cache small.  
 - [ ] Preempt which chunks will be needed before they're loaded and put in cache. (Compute slowly)
 - [ ] Block far away chunks into 'megachunks' that can be rendered as a single mesh. (To reduce draw calls)
 - [ ] Stitch the holes between chunks like this: https://www.youtube.com/watch?v=sXFxfqGPR-c

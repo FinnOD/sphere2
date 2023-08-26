@@ -8,6 +8,7 @@
 	import { deserializeBufferGeometry, serializeBufferGeometry } from '$lib/extras/SerializeBufferGeometry';
 	import { onDestroy, onMount } from 'svelte';
 	import GroundMaterial from '$lib/components/materials/GroundMaterial/GroundMaterial.svelte';
+	import { chunkGeometryCache } from '$lib/state';
 
 	export let tile: BufferGeometry;
 	export let chunkIndex: number;
@@ -32,15 +33,26 @@
 
 	
 	let worker: Worker;
-	function runWorker(tile: BufferGeometry, detail: number) {
+	function runWorker(tile: BufferGeometry, detail: number): Promise<BufferGeometry> {
 		return new Promise((resolve, reject) => {
-			worker = new MyWorker();
+			const cachedGeometry = $chunkGeometryCache[[chunkIndex, detail].toString()];
+			if (cachedGeometry !== undefined){
+				console.log('found', chunkIndex, detail);
+				resolve(cachedGeometry);
+			}
 
+			worker = new MyWorker();
+			
 			worker.onmessage = function (e) {
 				// console.log('Message received from worker');
 				const detailedSerializedGeometry = e.data;
 				const detailedGeometry = deserializeBufferGeometry(detailedSerializedGeometry);
 
+				if ($chunkGeometryCache[[chunkIndex, detail].toString()] == undefined){
+					$chunkGeometryCache[[chunkIndex, detail].toString()] = detailedGeometry;
+					console.log('saved', chunkIndex, detail);
+					console.log($chunkGeometryCache);
+				}
 				resolve(detailedGeometry); // Resolve the promise with the data sent by the worker
 				worker.terminate(); // Terminate the worker after the message is received
 			};
@@ -69,7 +81,7 @@
 	});
 	// console.log(subdividedGeomPromise);
 	
-	// $: color = new Color().setHSL((0.5*distanceMatrix[$chunkIndex][i])/6, 0.9, 0.7)
+	$: color = new Color().setHSL((0.5*chunkIndex)/30, 0.9, 0.7)
 </script>
 
 {#await subdividedGeomPromise}

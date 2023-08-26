@@ -1,6 +1,6 @@
 import { writable, type Writable } from 'svelte/store';
 import { useKeyboardControls } from "svelte-kbc";
-import { Vector3 } from 'three';
+import { BufferGeometry, Vector3 } from 'three';
 
 export const fpControlsEnabled = writable(false);
 export const plControlsEnabled = writable(false);
@@ -23,20 +23,4 @@ export function processHash() {
     return JSON.parse(hash);
 }
 
-// function createChunkCache() {
-// 	const { subscribe, set, update } = writable({});
-
-// 	return {
-// 		subscribe,
-// 		// increment: () => update((n) => n + 1),
-// 		// decrement: () => update((n) => n - 1),
-//         get: (chunkIndex: number) => update((cache) => {
-//             cache['abb'] = 'beep';
-//             return cache;
-//         }),
-// 		reset: () => set({})
-// 	};
-// }
-
-// export const chunkCache = createChunkCache();
-// console.log(chunkCache.get(100));
+export const chunkGeometryCache: Writable<Record<string, BufferGeometry>> = writable({});
