@@ -15,6 +15,7 @@ I came up with this when I was maybe 17 on a family trip. One night I was having
 - [ ] Preempt which chunks will be needed before they're loaded and put in cache. (Compute slowly)
 - [ ] Block far away chunks into 'megachunks' that can be rendered as a single mesh. (To reduce draw calls)
 - [ ] Stitch the holes between chunks like this: https://www.youtube.com/watch?v=sXFxfqGPR-c
+    - Need to fix normals at chunk boundaries to be continuous. It is noticable even with aligned chunk boundaries.
 - [ ] Define biomes and terrain type attributes from noise CPU side. 
     - Geography (height / temperature, soil quality, lakeness) ->  (wind, humidity, greenness, wetness) -> 
 

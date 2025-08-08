@@ -1,11 +1,21 @@
 <script lang="ts">
 	import { noisifyBuffer } from '$lib/extras/GenerateWorldGeometry';
 	import { T } from '@threlte/core';
-	import { Color, BackSide, BufferGeometry, BufferAttribute, DoubleSide, SphereGeometry } from 'three';
+	import {
+		Color,
+		BackSide,
+		BufferGeometry,
+		BufferAttribute,
+		DoubleSide,
+		SphereGeometry
+	} from 'three';
 	import { LoopSubdivision } from 'three-subdivide';
 	import MyWorker from './worker?worker';
 	import { scale } from 'svelte/transition';
-	import { deserializeBufferGeometry, serializeBufferGeometry } from '$lib/extras/SerializeBufferGeometry';
+	import {
+		deserializeBufferGeometry,
+		serializeBufferGeometry
+	} from '$lib/extras/SerializeBufferGeometry';
 	import { onDestroy, onMount } from 'svelte';
 	import GroundMaterial from '$lib/components/materials/GroundMaterial/GroundMaterial.svelte';
 	import { chunkGeometryCache } from '$lib/state';
@@ -31,27 +41,26 @@
 		return subdivided;
 	}
 
-	
 	let worker: Worker;
 	function runWorker(tile: BufferGeometry, detail: number): Promise<BufferGeometry> {
 		return new Promise((resolve, reject) => {
 			const cachedGeometry = $chunkGeometryCache[[chunkIndex, detail].toString()];
-			if (cachedGeometry !== undefined){
-				console.log('found', chunkIndex, detail);
+			if (cachedGeometry !== undefined) {
+				// console.log('found', chunkIndex, detail);
 				resolve(cachedGeometry);
 			}
 
 			worker = new MyWorker();
-			
+
 			worker.onmessage = function (e) {
 				// console.log('Message received from worker');
 				const detailedSerializedGeometry = e.data;
 				const detailedGeometry = deserializeBufferGeometry(detailedSerializedGeometry);
 
-				if ($chunkGeometryCache[[chunkIndex, detail].toString()] == undefined){
+				if ($chunkGeometryCache[[chunkIndex, detail].toString()] == undefined) {
 					$chunkGeometryCache[[chunkIndex, detail].toString()] = detailedGeometry;
-					console.log('saved', chunkIndex, detail);
-					console.log($chunkGeometryCache);
+					// console.log('saved', chunkIndex, detail);
+					// console.log($chunkGeometryCache);
 				}
 				resolve(detailedGeometry); // Resolve the promise with the data sent by the worker
 				worker.terminate(); // Terminate the worker after the message is received
@@ -61,16 +70,15 @@
 				reject(err); // Reject the promise in case of an error
 				worker.terminate();
 				throw err;
-			}
+			};
 
 			const serializedGeometry = serializeBufferGeometry(tile);
-			
+
 			worker.postMessage([serializedGeometry, detail]);
 		});
 	}
 	$: subdividedGeomLow = makeBufferGeometry(tile, 4);
 	const subdividedGeomPromise = runWorker(tile, detail);
-
 
 	onDestroy(() => {
 		// console.log('unloading chunk ', chunkIndex);
@@ -80,16 +88,17 @@
 		// console.log('loading chunk ', chunkIndex)
 	});
 	// console.log(subdividedGeomPromise);
-	
-	$: color = new Color().setHSL((0.5*chunkIndex)/30, 0.9, 0.7)
+
+	// $: color = new Color().setHSL((0.5*chunkIndex)/30, 0.9, 0.7)
 </script>
 
 {#await subdividedGeomPromise}
-	<T.Mesh geometry={subdividedGeomLow} >
+	<T.Mesh geometry={subdividedGeomLow}>
 		<GroundMaterial />
 	</T.Mesh>
 {:then finalGeom}
-	<T.Mesh geometry={finalGeom} >
+	<T.Mesh geometry={finalGeom}>
+		<!-- <T.MeshPhongMaterial color={color} side={DoubleSide} wireframe={false}/> -->
 		<GroundMaterial />
 	</T.Mesh>
 {/await}

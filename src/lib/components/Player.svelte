@@ -105,7 +105,7 @@
 		makeDefault
 		fov={65 + (10 * $progress) / 5}
 		far={10 * 3000}
-		near={1}
+		near={0.3}
 		bind:ref={cam}
 		position.x={position.x}
 		position.y={position.y}
@@ -121,7 +121,7 @@
 	</T.PerspectiveCamera>
 </T.Group>
 
-<T.Mesh position={[surrogatePos.x, surrogatePos.y, surrogatePos.z]}>
+<!-- <T.Mesh position={[surrogatePos.x, surrogatePos.y, surrogatePos.z]}>
 	<T.SphereGeometry radius={1}></T.SphereGeometry>
 	<T.MeshNormalMaterial></T.MeshNormalMaterial>
-</T.Mesh>
+</T.Mesh> -->

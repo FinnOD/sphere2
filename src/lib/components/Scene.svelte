@@ -41,7 +41,7 @@
 		renderInfo.set(stats);
 
 		if (stats.frame % 120 == 0) {
-			console.log(stats, delta);
+			// console.log(stats, delta);
 			// console.log(cameraPos, cameraDirection);
 			// console.log(space);
 		}

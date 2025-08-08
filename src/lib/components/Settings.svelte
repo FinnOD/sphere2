@@ -34,10 +34,12 @@
     <ul style="font-family:monospace;">
         <li>r = {((spherePos.radius).toFixed(2)).padStart(7,  " ")}</li>
         <li>h = {((3000-spherePos.radius).toFixed(2)).padStart(7, " ")}</li>
+        <li>x = {$playerPosition.x}</li>
+        <li>y = {$playerPosition.y}</li>
+        <li>z = {$playerPosition.z}</li>
         {#each Object.entries($renderInfo) as [key, value]}
             <li>{key}: {value}</li>
         {/each}
-        
     </ul>
         
     

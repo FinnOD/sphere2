@@ -94,6 +94,62 @@ vec3 perturbNormal(vec3 normal, vec3 noise) {
     return normalize(normal + noise);
 }
 
+float fbm(vec3 p) {
+    float total = 0.0;
+    float amplitude = 1.0;
+    float frequency = 1.0;
+    int octaves = 5;  // Number of octaves or layers
+
+    for (int i = 0; i < octaves; i++) {
+        total += amplitude * cnoise(p * frequency);
+        amplitude *= 0.5;  // Decrease the amplitude with each octave
+        frequency *= 2.0;  // Double the frequency with each octave
+        p *= 3.0;  // Move to the next octave by scaling the position
+    }
+
+    return total;
+}
+
+vec3 applyFog( in vec3  rgb,      // original color of the pixel
+               in float distance, // camera to point distance
+               in vec3  rayOri,   // camera position
+               in vec3  rayDir )  // camera to point vector
+{
+    float time = 20.*(1.+sin(u_time/1.))/2.;
+
+    vec3 endPoint = distance*rayDir + rayOri;
+
+    // float a = 0.00000000000000000006934;
+    // float b = 0.00000000000000000017;
+    // a *= 0.04;
+    // a *= 0.5;
+    
+    // float m = 2800.;
+
+    // a *= time;
+    // a = abs(1265.0105804513987/30000000.);
+    // m = abs(2059.892286618603/500000.);
+
+    #define MAX_FOG_ITER 20
+    float step = 1000./float(MAX_FOG_ITER);
+    float accumFog = 0.0;
+    for(int i = 1; i <= MAX_FOG_ITER; i++){
+        float i_f = float(i);
+        if(step*i_f < distance){
+            vec3 rayPos = mix(rayOri, endPoint, step*i_f/distance);
+            float noise = 0.1;//2.*clamp(fbm(rayPos/3000. + vec3(0.0, 0.0, u_time/100.)), 0., 1.0);
+            noise *= exp(-0.005*(3000.-length(rayPos)));
+            accumFog += noise;
+        }
+    }
+
+    float fogAmount = 1.0-exp(-accumFog);
+
+    vec3  fogColor  = vec3(0.5, 0.6, 0.7);
+    return mix( rgb, fogColor, fogAmount );
+}
+
+
 void main() {
     float distance = length(vPos - cameraPos);
 
@@ -104,17 +160,33 @@ void main() {
     // float fogAmount = 1.0 - exp( -distance*distance*b -  0.0001*(10.-height) );
     // float fogHeight = 0.01;
     // // 1.0-fogHeight*abs(height) +
-    float fogFactor = distance * distance * .000001;
-    float fogAmount = 1.0 - exp(-fogFactor);
-    // // float fogAmount = fogHeight*height;
+    float fogFactor = distance * distance;
+   
 
-    vec2 uv = gl_FragCoord.xy / u_resolution;
+    vec3 noiseSampleCoord = vPos * 0.002;
+    float noiseSample = fbm(noiseSampleCoord + fbm(noiseSampleCoord+ vec3(-100.0, 100.0, u_time/50. )) ) *0.5 + 0.5;
+    noiseSample += (cnoise(vPos/400. + vec3(u_time/100., -100.0, 100.0 ))*2. -0.1);
+    fogFactor *= mix(noiseSample, 1.1, saturate((distance - 1000.)/1000.));
+    
+
+    float fogAmount = 1.0 - exp(-fogFactor* .0000005);
+    float heightFactor = exp(-height*0.003);
+    // fogAmount = min(heightFactor, fogAmount);
+    fogAmount *= heightFactor -noiseSample*0.2;
+    fogAmount += 0.5*(1.0 - exp(-fogFactor* .00000005));
+    fogAmount = saturate(fogAmount);
+
+
+
     vec3 surfaceNormal = normalize(Vnormal);
 
-    float nScale = 100.;
+    float nScale = 50.;
     vec3 noise = vec3(cnoise(nScale * vPos.xyz + vec3(6000., 0., 0.)), cnoise(nScale * vPos.xyz + vec3(0., 6000., 0.)), cnoise(nScale * vPos.xyz + vec3(0., 0., 6000.))) * 2.0 - 1.0;
-    surfaceNormal = perturbNormal(surfaceNormal, noise * 0.05);
-
+    
+    float clampedDistance = 1.0 - clamp(distance/100., 0.0, 1.0);
+   
+    surfaceNormal = mix(surfaceNormal, perturbNormal(surfaceNormal, noise * 0.05), vec3(clampedDistance));
+    
     // float lambertian = max(dot(normalize(vPos), vec3(-1.0, -1.0, -1.0)), 0.0);
     float lambertian = max(dot(surfaceNormal, vec3(-1.0, -1.0, -1.0)), 0.0);
 
@@ -138,6 +210,7 @@ void main() {
     col *= lambertian + vec3(0.3);
     col = mix(col, fogColor, fogAmount);
     // col = floor(col*vec3(10.))/10.;
-    // col = vec3(cameraPos/3000.);
+    // col = applyFog(col, length(p0-p1), p0, dir);
+    // col *= clamp(inFog, 0.05, 1.0);//normalize
     gl_FragColor = vec4(col, 1.0);
 }
